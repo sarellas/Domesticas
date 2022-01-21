@@ -1,0 +1,13 @@
+---
+title: "Análise de Dados PnadC"
+author: "Natália Sarellas"
+date: "21/01/2022"
+output: html_document
+---
+
+## Análise de dados da PnadC para trabalho doméstico
+
+```{r}
+library("tidyverse")
+```
+
