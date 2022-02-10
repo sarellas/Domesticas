@@ -9,6 +9,64 @@ output: html_document
 
 ```{r}
 library("tidyverse")
+library("tidylog")
+library("sf")
+library("dplyr")
+library("readxl")
 ```
 
+
+```{r}
+
+# Data: 10/02/2022
+# Abrindo a Tabela6383.xlsx obtida através do sistema SIDRA/IBGE
+
+Domesticas_SIDRA <- read_excel("tabela6383.xlsx", 1)
+
+# Limpando e organizando a base de dados
+
+Mensalistas <- 
+  Domesticas_SIDRA %>% 
+  separate(Trimestre, c("quarter","apagar", "ano"), " ") %>%
+  select(quarter, ano, num_domicilios, num_domesticas) %>%
+  separate(quarter, c("trim", "apagar"), 1) %>%
+  select(trim, ano, num_domicilios, num_domesticas) %>%
+  mutate(num_domicilios = case_when(is.na(num_domicilios) ~ "prop",
+                                    TRUE ~ num_domicilios)) %>%
+  filter(num_domicilios != "prop") %>%
+  filter(num_domicilios == "Em um único domicílio") %>%
+  select(trim, ano, num_domesticas) 
+  
+Diariastas <- 
+  Domesticas_SIDRA %>% 
+  separate(Trimestre, c("quarter","apagar", "ano"), " ") %>%
+  select(quarter, ano, num_domicilios, num_domesticas) %>%
+  separate(quarter, c("trim", "apagar"), 1) %>%
+  select(trim, ano, num_domicilios, num_domesticas) %>%
+  mutate(num_domicilios = case_when(is.na(num_domicilios) ~ "prop",
+                                    TRUE ~ num_domicilios)) %>%
+  filter(num_domicilios != "prop") %>%
+  filter(num_domicilios == "Em mais de um domicílio") %>%
+  mutate(ID = 1:33) %>%
+    mutate(Ano = case_when(ID <= 4 ~ 2012,
+                           ID %in% (5:8) ~2013,
+                           ID %in% (9:12) ~2014,
+                           ID %in% (13:16) ~2015,
+                           ID %in% (17:20) ~2016,
+                           ID %in% (21:24) ~2017,
+                           ID %in% (25:28) ~2018,
+                           ID %in% (29:32) ~2019,
+                           ID >= 33 ~ 2020)) %>%
+    mutate(tri = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,1, 2, 3, 4,1, 2, 3, 4, 1)) %>%
+      select(tri, Ano, num_domesticas) 
+  
+
+
+```
+
+Vamos agora criar gráficos para o número de Mensalistas e Diaristas.
+
+```{r}
+
+```
 
