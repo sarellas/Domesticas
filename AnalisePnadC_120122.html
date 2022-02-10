@@ -182,6 +182,89 @@ pre code {
 <pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(&quot;tidylog&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tidylog&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     add_count, add_tally, anti_join, count, distinct, distinct_all,
+##     distinct_at, distinct_if, filter, filter_all, filter_at, filter_if,
+##     full_join, group_by, group_by_all, group_by_at, group_by_if,
+##     inner_join, left_join, mutate, mutate_all, mutate_at, mutate_if,
+##     relocate, rename, rename_all, rename_at, rename_if, rename_with,
+##     right_join, sample_frac, sample_n, select, select_all, select_at,
+##     select_if, semi_join, slice, slice_head, slice_max, slice_min,
+##     slice_sample, slice_tail, summarise, summarise_all, summarise_at,
+##     summarise_if, summarize, summarize_all, summarize_at, summarize_if,
+##     tally, top_frac, top_n, transmute, transmute_all, transmute_at,
+##     transmute_if, ungroup</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     drop_na, fill, gather, pivot_longer, pivot_wider, replace_na,
+##     spread, uncount</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>library(&quot;sf&quot;)</code></pre>
+<pre><code>## Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE</code></pre>
+<pre class="r"><code>library(&quot;dplyr&quot;)
+library(&quot;readxl&quot;)</code></pre>
+<pre class="r"><code># Data: 10/02/2022
+# Abrindo a Tabela6383.xlsx obtida através do sistema SIDRA/IBGE
+
+Domesticas_SIDRA &lt;- read_excel(&quot;tabela6383.xlsx&quot;, 1)
+
+# Limpando e organizando a base de dados
+
+Mensalistas &lt;- 
+  Domesticas_SIDRA %&gt;% 
+  separate(Trimestre, c(&quot;quarter&quot;,&quot;apagar&quot;, &quot;ano&quot;), &quot; &quot;) %&gt;%
+  select(quarter, ano, num_domicilios, num_domesticas) %&gt;%
+  separate(quarter, c(&quot;trim&quot;, &quot;apagar&quot;), 1) %&gt;%
+  select(trim, ano, num_domicilios, num_domesticas) %&gt;%
+  mutate(num_domicilios = case_when(is.na(num_domicilios) ~ &quot;prop&quot;,
+                                    TRUE ~ num_domicilios)) %&gt;%
+  filter(num_domicilios != &quot;prop&quot;) %&gt;%
+  filter(num_domicilios == &quot;Em um único domicílio&quot;) %&gt;%
+  select(trim, ano, num_domesticas) </code></pre>
+<pre><code>## select: dropped 2 variables (apagar, variavel)</code></pre>
+<pre><code>## select: dropped one variable (apagar)</code></pre>
+<pre><code>## mutate: changed 66 values (50%) of &#39;num_domicilios&#39; (66 fewer NA)</code></pre>
+<pre><code>## filter: removed 66 rows (50%), 66 rows remaining</code></pre>
+<pre><code>## filter: removed 33 rows (50%), 33 rows remaining</code></pre>
+<pre><code>## select: dropped one variable (num_domicilios)</code></pre>
+<pre class="r"><code>Diariastas &lt;- 
+  Domesticas_SIDRA %&gt;% 
+  separate(Trimestre, c(&quot;quarter&quot;,&quot;apagar&quot;, &quot;ano&quot;), &quot; &quot;) %&gt;%
+  select(quarter, ano, num_domicilios, num_domesticas) %&gt;%
+  separate(quarter, c(&quot;trim&quot;, &quot;apagar&quot;), 1) %&gt;%
+  select(trim, ano, num_domicilios, num_domesticas) %&gt;%
+  mutate(num_domicilios = case_when(is.na(num_domicilios) ~ &quot;prop&quot;,
+                                    TRUE ~ num_domicilios)) %&gt;%
+  filter(num_domicilios != &quot;prop&quot;) %&gt;%
+  filter(num_domicilios == &quot;Em mais de um domicílio&quot;) %&gt;%
+  mutate(ID = 1:33) %&gt;%
+    mutate(Ano = case_when(ID &lt;= 4 ~ 2012,
+                           ID %in% (5:8) ~2013,
+                           ID %in% (9:12) ~2014,
+                           ID %in% (13:16) ~2015,
+                           ID %in% (17:20) ~2016,
+                           ID %in% (21:24) ~2017,
+                           ID %in% (25:28) ~2018,
+                           ID %in% (29:32) ~2019,
+                           ID &gt;= 33 ~ 2020)) %&gt;%
+    mutate(tri = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,1, 2, 3, 4,1, 2, 3, 4, 1)) %&gt;%
+      select(tri, Ano, num_domesticas) </code></pre>
+<pre><code>## select: dropped 2 variables (apagar, variavel)</code></pre>
+<pre><code>## select: dropped one variable (apagar)</code></pre>
+<pre><code>## mutate: changed 66 values (50%) of &#39;num_domicilios&#39; (66 fewer NA)</code></pre>
+<pre><code>## filter: removed 66 rows (50%), 66 rows remaining</code></pre>
+<pre><code>## filter: removed 33 rows (50%), 33 rows remaining</code></pre>
+<pre><code>## mutate: new variable &#39;ID&#39; (integer) with 33 unique values and 0% NA</code></pre>
+<pre><code>## mutate: new variable &#39;Ano&#39; (double) with 9 unique values and 0% NA</code></pre>
+<pre><code>## mutate: new variable &#39;tri&#39; (double) with 4 unique values and 0% NA</code></pre>
+<pre><code>## select: dropped 4 variables (trim, ano, num_domicilios, ID)</code></pre>
+<p>Vamos agora criar gráficos para o número de Mensalistas e Diaristas.</p>
 </div>
 
 
