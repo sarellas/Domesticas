@@ -1,0 +1,58 @@
+---
+title: "Microdados PnadC"
+author: "Natália Sarellas"
+date: "14/02/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Análise dos microdados da Pnad Contínua para Artigo 3
+
+```{r}
+# Pacotes
+
+library("tidyverse")
+library("tidylog")
+library("sf")
+library("dplyr")
+library("readxl")
+library("zoo") # para trimestralizar as datas
+```
+
+Vou tentar utilizar o pacote PNADcIBGE para abrir os dados da PnadC. 
+
+```{r}
+
+library(PNADcIBGE)
+library(survey)
+
+# Tentando abrir diretamente dos arquivos online
+
+dadosPNADc0419 = get_pnadc(year = 2019, quarter = 4, vars=c("V2007","V2009", "V4012", "V4022", "V4024"))
+
+
+pnadc_012019 <- read_pnadc("PNADC_012019.txt", "Input_PNADC_trimestral.txt")
+pnadc_022019 <- read_pnadc("PNADC_022019.txt", "Input_PNADC_trimestral.txt")
+pnadc_032019 <- read_pnadc("PNADC_032019.txt", "Input_PNADC_trimestral.txt")
+pnadc_042019 <- read_pnadc("PNADC_042019.txt", "Input_PNADC_trimestral.txt")
+pnadc_012020 <- read_pnadc("PNADC_012020.txt", "Input_PNADC_trimestral.txt")
+pnadc_022020 <- read_pnadc("PNADC_022020.txt", "Input_PNADC_trimestral.txt")
+pnadc_032020 <- read_pnadc("PNADC_032020.txt", "Input_PNADC_trimestral.txt")
+pnadc_042020 <- read_pnadc("PNADC_042020.txt", "Input_PNADC_trimestral.txt")
+
+pnadc_012019_domst <-
+  pnadc_012019 %>% 
+    filter(V4012 == 1) %>%
+    select("Ano", "Trimestre", "UF", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024")
+
+
+```
+
+
+
+
+
+
