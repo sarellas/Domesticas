@@ -20,9 +20,13 @@ library("sf")
 library("dplyr")
 library("readxl")
 library("zoo") # para trimestralizar as datas
+
+library(haven)
+library(foreign)
+library(data.table)
 ```
 
-Vou tentar utilizar o pacote PNADcIBGE para abrir os dados da PnadC. 
+Utilizando o pacote PNADcIBGE para abrir os dados da PnadC. 
 
 ```{r}
 
@@ -31,22 +35,77 @@ library(survey)
 
 # Tentando abrir diretamente dos arquivos online
 
-dadosPNADc0419 = get_pnadc(year = 2019, quarter = 4, vars=c("V2007","V2009", "V4012", "V4022", "V4024"))
+#dadosPNADc0419 = get_pnadc(year = 2019, quarter = 4, vars=c("V2007","V2009", "V4012", "V4022", "V4024"))
 
 
-pnadc_012019 <- read_pnadc("PNADC_012019.txt", "Input_PNADC_trimestral.txt")
-pnadc_022019 <- read_pnadc("PNADC_022019.txt", "Input_PNADC_trimestral.txt")
-pnadc_032019 <- read_pnadc("PNADC_032019.txt", "Input_PNADC_trimestral.txt")
-pnadc_042019 <- read_pnadc("PNADC_042019.txt", "Input_PNADC_trimestral.txt")
-pnadc_012020 <- read_pnadc("PNADC_012020.txt", "Input_PNADC_trimestral.txt")
-pnadc_022020 <- read_pnadc("PNADC_022020.txt", "Input_PNADC_trimestral.txt")
-pnadc_032020 <- read_pnadc("PNADC_032020.txt", "Input_PNADC_trimestral.txt")
-pnadc_042020 <- read_pnadc("PNADC_042020.txt", "Input_PNADC_trimestral.txt")
+pnadc_012019 <- read_pnadc("PNADC_012019.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF", "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
 
-pnadc_012019_domst <-
+pnadc_012019 <-
   pnadc_012019 %>% 
-    filter(V4012 == 1) %>%
-    select("Ano", "Trimestre", "UF", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024")
+    filter(V4012 == 1)
+
+
+pnadc_022019 <- read_pnadc("PNADC_022019.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF",  "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_022019 <-
+  pnadc_022019 %>% 
+    filter(V4012 == 1)
+
+pnadc_032019 <- read_pnadc("PNADC_032019.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF",  "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_032019 <-
+  pnadc_032019 %>% 
+    filter(V4012 == 1)
+
+pnadc_042019 <- read_pnadc("PNADC_042019.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF", "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_042019 <-
+  pnadc_042019 %>% 
+    filter(V4012 == 1)
+
+pnadc_012020 <- read_pnadc("PNADC_012020.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF",  "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_012020 <-
+  pnadc_012020 %>% 
+    filter(V4012 == 1)
+
+pnadc_022020 <- read_pnadc("PNADC_022020.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF",  "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_022020 <-
+  pnadc_022020 %>% 
+    filter(V4012 == 1)
+
+pnadc_032020 <- read_pnadc("PNADC_032020.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF", "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_032020 <-
+  pnadc_032020 %>% 
+    filter(V4012 == 1)
+
+pnadc_042020 <- read_pnadc("PNADC_042020.txt", "Input_PNADC_trimestral.txt", vars = c("Ano", "Trimestre", "UF", "UPA", "V1008", "V1014", "V2008", "V20081", "V20082", "V2007", "V2009", "V2010", "V4012", "V4022", "V4024"))
+
+pnadc_042020 <-
+  pnadc_042020 %>% 
+    filter(V4012 == 1)
+
+
+# Empilhando as bases de dados:
+
+pnad_19_20 <- bind_rows(pnadc_012019, pnadc_022019, pnadc_032019, pnadc_042019, pnadc_012020, pnadc_022020, pnadc_032020, pnadc_042020)
+
+
+rm(pnadc_012019, pnadc_022019, pnadc_032019, pnadc_042019, pnadc_012020, pnadc_022020, pnadc_032020, pnadc_042020)
+
+pnad_19_20 <- 
+  pnad_19_20 %>% 
+  unite("idpessoas", c(UPA, V1008, V1014, V2008, V20081, V20082), remove=FALSE, sep="") %>% 
+  unite("tempo", c(Ano, Trimestre), remove=FALSE, sep="-")
+
+
+fwrite(pnad_19_20, "pnadc_2019_2020.csv")
+
+
+write.dta(pnad_19_20, file = 'pnadc_2019_2020.dta')
+
 
 
 ```
