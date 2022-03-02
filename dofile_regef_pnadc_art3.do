@@ -66,7 +66,9 @@ xtset idpessoas tempo
 * Rodar regressão de efeitos fixos 
 
 	* Efeito do lockdown na carteira assinada (significativo!)
-	logout, save(Resultados) word excel tex replace: xtreg carteira lockdown, fe vce(cluster idpessoas)
+	logout, save(Resultados) tex replace: xtreg carteira lockdown, fe vce(cluster idpessoas)
+	
+	logout, save(Resultados) tex replace: xtreg carteira lockdown i.tempo, vce(cluster idpessoas)
 	
 	* Efeito lockdown nas horas de trabalho (significativo!)
 	logout, save(Horas) tex replace: xtreg horas lockdown, fe 
@@ -80,7 +82,15 @@ xtset idpessoas tempo
 	
 * Substituição entre mensalista para diarista 
 
-
+	* Efeito lockdown nas horas de trabalho de mensalistas
+	xtreg horas lockdown mensalista, fe
+		
+		* interpretação: lockdown diminuiu o número de horas trabalhadas das 
+		* mensalistas em 0.47 em relação ao número de horas traballhadas pelas
+		* diaristas.
+	
+	* Efeito lockdown no rendimento de mensalistas
+	reg horas i.mensalista ## i.lockdown 
 
 
 
